@@ -10,7 +10,7 @@ provider "aws" {
    region = "us-east-1"
 }
 
-resource "aws_lambda_function" "example" {
+resource "aws_lambda_function" "sum" {
    function_name = "Sum"
 
    # The bucket name as created earlier with "aws s3api create-bucket"
@@ -24,6 +24,19 @@ resource "aws_lambda_function" "example" {
    runtime = "nodejs10.x"
 
    role = aws_iam_role.lambda_exec.arn
+}
+
+//new
+resource "aws_lambda_function" "sub" {
+   function_name = "Sub"
+   s3_bucket = var.s3_bucket
+   s3_key    = "v${var.app_version}/sub.zip"
+
+   handler = "sub.handler"
+   runtime = "nodejs10.x"
+
+   role = aws_iam_role.lambda_exec.arn
+
 }
 
  # IAM role which dictates what other AWS services the Lambda function
@@ -52,14 +65,30 @@ EOF
 resource "aws_lambda_permission" "apigw" {
    statement_id  = "AllowAPIGatewayInvoke"
    action        = "lambda:InvokeFunction"
-   function_name = aws_lambda_function.example.function_name
+   function_name = aws_lambda_function.sum.function_name
    principal     = "apigateway.amazonaws.com"
 
    # The "/*/*" portion grants access from any method on any resource
    # within the API Gateway REST API.
-   source_arn = "${aws_api_gateway_rest_api.example.execution_arn}/*/*"
+   source_arn = "${aws_api_gateway_rest_api.functions.execution_arn}/*/*"
 }
 
-output "base_url" {
-  value = aws_api_gateway_deployment.example.invoke_url
+//new
+resource "aws_lambda_permission" "sub_permission" {
+   statement_id  = "AllowAPIGatewayInvoke"
+   action        = "lambda:InvokeFunction"
+   function_name = aws_lambda_function.sub.function_name
+   principal     = "apigateway.amazonaws.com"
+
+   # The "/*/*" portion grants access from any method on any resource
+   # within the API Gateway REST API.
+   source_arn = "${aws_api_gateway_rest_api.functions.execution_arn}/*/*"
 }
+
+output "sum_url" {
+  value = aws_api_gateway_deployment.sum.invoke_url
+}
+
+# output "sub_url" {
+#   value = aws_api_gateway_deployment.sub.invoke_url
+# }
