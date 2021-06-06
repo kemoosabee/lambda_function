@@ -16,6 +16,13 @@ resource "aws_api_gateway_resource" "sub_proxy_resource" {
    path_part   = "sub"
 }
 
+//new
+resource "aws_api_gateway_resource" "mult_proxy_resouce" {
+   rest_api_id = aws_api_gateway_rest_api.functions.id
+   parent_id   = aws_api_gateway_rest_api.functions.root_resource_id
+   path_part   = "mult"
+}
+
 resource "aws_api_gateway_method" "sum_proxy_method" {
    rest_api_id   = aws_api_gateway_rest_api.functions.id
    resource_id   = aws_api_gateway_resource.sum_proxy_resource.id
@@ -27,6 +34,14 @@ resource "aws_api_gateway_method" "sum_proxy_method" {
 resource "aws_api_gateway_method" "sub_proxy_method" {
    rest_api_id   = aws_api_gateway_rest_api.functions.id
    resource_id   = aws_api_gateway_resource.sub_proxy_resource.id
+   http_method   = "ANY"
+   authorization = "NONE"
+}
+
+//new
+resource "aws_api_gateway_method" "mult_proxy_method" {
+   rest_api_id   = aws_api_gateway_rest_api.functions.id
+   resource_id   = aws_api_gateway_resource.mult_proxy_resouce.id
    http_method   = "ANY"
    authorization = "NONE"
 }
@@ -50,6 +65,17 @@ resource "aws_api_gateway_integration" "sub" {
    integration_http_method = "POST"
    type                    = "AWS_PROXY"
    uri                     = aws_lambda_function.sub.invoke_arn
+}
+
+//new
+resource "aws_api_gateway_integration" "mult" {
+   rest_api_id = aws_api_gateway_rest_api.functions.id
+   resource_id = aws_api_gateway_method.mult_proxy_method.resource_id
+   http_method = aws_api_gateway_method.mult_proxy_method.http_method
+
+   integration_http_method = "POST"
+   type                    = "AWS_PROXY"
+   uri                     = aws_lambda_function.multiply.invoke_arn
 }
 
 
@@ -82,6 +108,17 @@ resource "aws_api_gateway_integration" "sub_lambda_root" {
    uri                     = aws_lambda_function.sub.invoke_arn
 }
 
+//new
+resource "aws_api_gateway_integration" "mult_lambda_root" {
+   rest_api_id = aws_api_gateway_rest_api.functions.id
+   resource_id = aws_api_gateway_method.proxy_root.resource_id
+   http_method = aws_api_gateway_method.proxy_root.http_method
+
+   integration_http_method = "POST"
+   type                    = "AWS_PROXY"
+   uri                     = aws_lambda_function.multiply.invoke_arn
+}
+
 resource "aws_api_gateway_deployment" "sum" {
    depends_on = [
      aws_api_gateway_integration.sum,
@@ -104,3 +141,16 @@ resource "aws_api_gateway_deployment" "sub" {
    rest_api_id = aws_api_gateway_rest_api.functions.id
    stage_name  = "math"
 }
+
+//new
+resource "aws_api_gateway_deployment" "mult" {
+   depends_on = [
+     aws_api_gateway_integration.mult,
+     aws_api_gateway_integration.mult_lambda_root,
+
+   ]
+
+   rest_api_id = aws_api_gateway_rest_api.functions.id
+   stage_name  = "math"
+}
+
