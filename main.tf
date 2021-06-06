@@ -89,6 +89,6 @@ output "sum_url" {
   value = aws_api_gateway_deployment.sum.invoke_url
 }
 
-# output "sub_url" {
-#   value = aws_api_gateway_deployment.sub.invoke_url
-# }
+output "sub_url" {
+  value = aws_api_gateway_deployment.sub.invoke_url
+}
