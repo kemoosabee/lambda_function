@@ -21,7 +21,7 @@ resource "aws_lambda_function" "sum" {
    # is the name of the property under which the handler function was
    # exported in that file.
    handler = "sum.handler"
-   runtime = "nodejs10.x"
+   runtime = "nodejs14.x"
 
    role = aws_iam_role.lambda_exec.arn
 }
@@ -33,7 +33,7 @@ resource "aws_lambda_function" "sub" {
    s3_key    = "v${var.app_version}/sub.zip"
 
    handler = "sub.handler"
-   runtime = "nodejs10.x"
+   runtime = "nodejs14.x"
 
    role = aws_iam_role.lambda_exec.arn
 
@@ -46,7 +46,7 @@ resource "aws_lambda_function" "multiply" {
    s3_key    = "v${var.app_version}/multiply.zip"
 
    handler = "multiply.handler"
-   runtime = "nodejs10.x"
+   runtime = "nodejs14.x"
 
    role = aws_iam_role.lambda_exec.arn
 }
@@ -58,7 +58,7 @@ resource "aws_lambda_function" "divide" {
    s3_key    = "v${var.app_version}/divide.zip"
 
    handler = "divide.handler"
-   runtime = "nodejs10.x"
+   runtime = "nodejs14.x"
 
    role = aws_iam_role.lambda_exec.arn
 }
@@ -70,7 +70,7 @@ resource "aws_lambda_function" "modulus" {
    s3_key    = "v${var.app_version}/modulus.zip"
 
    handler = "modulus.handler"
-   runtime = "nodejs10.x"
+   runtime = "nodejs14.x"
 
    role = aws_iam_role.lambda_exec.arn
 }
@@ -82,7 +82,7 @@ resource "aws_lambda_function" "square" {
    s3_key    = "v${var.app_version}/square.zip"
 
    handler = "square.handler"
-   runtime = "nodejs10.x"
+   runtime = "nodejs14.x"
 
    role = aws_iam_role.lambda_exec.arn
 }
